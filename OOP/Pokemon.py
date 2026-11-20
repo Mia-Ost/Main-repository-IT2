@@ -1,7 +1,9 @@
 "Add type system, more moves, trainer, (try including parant), real batteling mechanics(switch), crit,"
-
+import PokemonSprite
 import random as r
 "Kaspar sugestion(annan fil)"
+
+
 fire = {
     "fire": 0.5,
     "water": 0.5,
@@ -58,8 +60,6 @@ earthquake =Move("Eartquake",35,"Physical",ground, "ground")
 fireball =Move("Fireball", 20, "Special", fire, "fire")
 lightning =Move ("Lightning",25,"Special", electric, "electric")
 
-"fire placeholder menhar ikkje noko å sei."
-
 class Status(Move):
     def __init__(self, name, power, Atype, type, Rtype, effect):
         super().__init__(name, power, Atype, type, Rtype)
@@ -69,7 +69,7 @@ class Status(Move):
 iron_deffense =Status("iron defense", "+2 defense", "Status", "Selfstatus", "fire",[1, 1, 2, 1, 1, 1])         
 
 
-
+"b= base, atk attack, df deffence, spatk special attack, spdf special deffense, sp speed"
 class Pokemon:
     def __init__(self, name, level, bhp, batk, bdf, bspatk, bspdf, bsp, type1, type2):
         self.name = name
@@ -97,10 +97,6 @@ class Pokemon:
         return self.hp, self.atk, self.spatk, self.df, self.spdf, self.sp
 
     
-    def is_alive(self):
-        return self.hp > 0
-
-    
     def Pvelg_move(self):
         self.move = [ice_shard, earthquake, fireball, lightning, iron_deffense]
         (f"Velg eit move {self.move}")
@@ -120,20 +116,21 @@ class Pokemon:
 Charizard = Pokemon("Charizard", 50, 78, 84, 78, 109, 85, 100, "fire","flying")
 Venusaur = Pokemon("Venusaur", 50, 80, 82, 83, 100, 100, 80,"grass", "poison")
 Blastoise = Pokemon("Blastoise", 50, 79, 83, 100, 85, 105, 78, "water", 1)
-
 Lpokemon = [Charizard, Venusaur, Blastoise]
+
 (f"Velg ein pokemon {[Lpokemon]}")
 for i in range(len(Lpokemon)):
     print(f"{i + 1}. {Lpokemon[i].name.capitalize()}")
 Pvalg = int(input("Skriv inn nummeret på pokemonen du vil bruke: ")) - 1  
 while Pvalg > 2 and Pvalg < 0:
     Pvalg = int(input("Svaret ditt var ikkje gyldig. Skriv inn nummeret på pokemonen du vil bruke: ")) - 1  
+Evalg = r.randint(0,2)
+
 ppokemon = Lpokemon[Pvalg]
-epokemon = Lpokemon[r.randint(0,2)]
+epokemon = Lpokemon[Evalg]
 
 
 
-"""add crit, replace is alive"""
 def Match(x,y):
     x.stats()
     y.stats()
@@ -153,13 +150,14 @@ def Match(x,y):
     Esp = y.sp
     Estats=[Ehp, Eatk, Edf, Espatk, Espdf, Esp]
     
-
     print(f"{x.name} has {x.hp} hp")
     print(f"{y.name} has {y.hp} hp")
-
+    "Physical attack"
     def Pattack (x,b,y,z):
         Pdamage = ((2*x.level/100+2)*z.power* b / y)* r.randint(85,100)/100
         return Pdamage
+
+    "Special attack"
     def Sattack (x,b,y,z):
         Sdamage = ((2*x.level/100+2)*z.power* b / y)* r.randint(85,100)/100
         return Sdamage
@@ -168,6 +166,7 @@ def Match(x,y):
         
 
     while Php > 0 and Ehp > 0:
+        "same type attack bonus"
         PStab = 1
         EStab = 1
         Tie_breaker = 0
@@ -187,25 +186,25 @@ def Match(x,y):
             for i in Ptype.keys():
                 if i == y.type1:
                     PEffectivness1 = Ptype[y.type1]
-                    print(f"player first {PEffectivness1}")              
+                                
                 if i == y.type2:
                     PEffectivness2 = Ptype[y.type2]
-                    print(f"player first {PEffectivness1}")
+                    
 
         PEffectivness = PEffectivness1 * PEffectivness2
-        print(f"player effectivness: {PEffectivness}")
+        
 
         if Etype != "Selfstatus":
             for i in Etype.keys():
                 if i == x.type1:
                     EEffectivness1 = Etype[x.type1]
-                    print(f"Enemy first {EEffectivness1}") 
+                    
                 if i == x.type2:
                     EEffectivness2 = Etype[x.type2]
-                    print(f"Enemy second {EEffectivness2}")
+                   
 
         EEffectivness = EEffectivness1 * EEffectivness2
-        print(f"Enemy effectivness: {EEffectivness}")
+       
 
         if Pmove.Rtype == x.type1 or Pmove.Rtype == x.type2:
             PStab = 1.5
@@ -234,11 +233,10 @@ def Match(x,y):
                     print (f"{y.name} has 0hp")
             else: 
                 if Pmove.type == "Selfstatus":
-                    print(Php, Patk, Pdf, Pspatk, Pspdf, Psp)
                     for i in range(len(Pstats)):
                         Pstats[i] = Pstats[i] * Pmove.effect[i]
                         print(Pstats) 
-                    print(Php, Patk, Pdf, Pspatk, Pspdf, Psp)
+                    
 
                 else:
                     print(Estats)
